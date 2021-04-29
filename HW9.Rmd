@@ -1,0 +1,139 @@
+---
+title: "HW9_Report"
+author: '107023058'
+date: "2021/4/23"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Question 1.
+Your colleague is working on a hypothesis test where he has sampled product usage information from customers . He wishes to test:
+h0 : mean usage time <= previous data(μο)
+h1 : mean usage time > previous data(μο) 
+After collecting data from just 50 customers, he informs you that he has found diff=0.3 and  sd=2.9, at n=50.
+
+Your colleague believes that we cannot reject the null hypothesis at alpha of 5%.
+Consider the following scenario and answer the question.
+
+## confirm from the visualization that we cannot reject the null hypothesis at 5% significance.
+As the graph shows, the mean of alternative is less than the 95% cut off of null distribution, so we can not reject the null hypothesis.
+
+
+## a. You discover that your colleague wanted to target the general population of Taiwanese users of the product.  However, he only collected data from a pool of young consumers, and missed many older customers who you suspect might use the product much less every day.
+
+**(i). Would this scenario create systematic or random error (or both or neither)?**  
+Ans: I think it would be **system error**. Because he missed the data of the older customers, the measurement way is totally wrong. We have to consider the older sample to get a more real data set.
+
+**(ii). Which part of the t-statistic or significance (diff, sd, n, alpha) would be affected?**  
+Ans: diff , sd , n will all be affected.
+
+**(iii). Will it increase or decrease our power to reject the null hypothesis?**  
+Ans: Because the data are now more concentrated on young and not including data older people, so the diff ,sd and n will decrease, and therefore the alternative is more close to the null distribution.
+So the power will decrease.
+
+**(iv). Which kind of error (Type I or Type II) becomes more likely because of this scenario?**  
+Ans: Type II error. Because We are hard to reject null as the power decrease,if the alternative is true, then we will get type II error.
+
+## b. You find that 20 of the respondents are reporting data from the wrong wearable device, so they should be removed from the data. These 20 people are just like the others in every other respect.
+**(i). Would this scenario create systematic or random error (or both or neither)?**  
+Ans: Because we have to remove 20 of the data,which causing the decrease of sample number.As the result, some wrong output may appear more frequently.So I think it would cause **random error**.
+
+**(ii). Which part of the t-statistic or significance (diff, sd, n, alpha) would be affected?**  
+Ans: Because that these 20 people are just like the others in every other respect, removing them may not cause a huge change on diff and sd. So I think only n will be affected. 
+
+**(iii). Will it increase or decrease our power to reject the null hypothesis?**  
+Ans: As the plot shows,  it will make the alternative more close to the null, so the power will decrease.
+
+**(iv). Which kind of error (Type I or Type II) becomes more likely because of this scenario?**  
+Ans: Because the power decreased, we are easily to not reject null, so it's more likey to have type II error.
+
+## c. A very annoying professor visiting your company has criticized your colleague’s “95% confidence” criteria, and has suggested relaxing it to just 90%.
+**(i). Would this scenario create systematic or random error (or both or neither)?**  
+Ans: I think it would still be **systematic error**. Because the significance confidence can be selected artificially, not cause by a random factor.
+
+**(ii). Which part of the t-statistic or significance (diff, sd, n, alpha) would be affected?**  
+Ans: Only the alpha will change.(From 0.05 to 0.1)
+
+**(iii). Will it increase or decrease our power to reject the null hypothesis?**  
+Ans: Because the 90% cut-off line is more less than the 95% cut-off line, the power will increase, which means that it would be more easily to reject null hypothesis.
+
+**(iv). Which kind of error (Type I or Type II) becomes more likely because of this scenario?**  
+Ans: Because the value of alpha increased, the probability to have a Type I error also increase. So it would be more likely to have a Type I error .
+
+## d. Your colleague has measured usage times on five weekdays and taken a daily average. But you feel this will underreport usage for younger people who are very active on weekends, whereas it over-reports usage of older users.
+**(i). Would this scenario create systematic or random error (or both or neither)?**  
+Ans: I think it would cause **both systematic error and random error**.Because the actual condition is unknown, maybe younger people will also active in weekdays. It has no rule and is quiet random.If we don't measure on the whole week, it would randomly occur some false.As for the way he do measurement, it is also wrong ,like the condition in part.(a), so I think it would also cause a systematic error.
+
+**(ii). Which part of the t-statistic or significance (diff, sd, n, alpha) would be affected?**  
+Ans: I think diff and sd may be affected if people doesn't normally distributed appear in each day.
+
+**(iii). Will it increase or decrease our power to reject the null hypothesis?**  
+Ans: I think it would increase the power.if the assumption that younger is less active in weekday is true, then the diff might be larger, so it will be more easy to reject null hypothesis.
+**(iv). Which kind of error (Type I or Type II) becomes more likely because of this scenario?**  
+Ans: as the power increases, we are more likely to reject null hypothesis,and thus if null hypothesis is true but we reject it,then we will have type I error.Therefore we can know that it will more likely to be type I error.
+
+# Question 2.
+A psychological research paper has published an experiment to see if emotion affects our perception of color on different color-axes
+
+```{r}
+# Pre-processing the data
+experiment <- read.csv('D:/Retro/NTHU/課程講義/大三/計算統計於商業分析之應用/HW9/study2Data.csv', header=TRUE)
+BY_data <- with(experiment, data.frame(Subject, Axis='BY', Emotion_Condition, ACC=BY_ACC, SAD_ESRI))
+RG_data <- with(experiment, data.frame(Subject, Axis='RG', Emotion_Condition, ACC=RG_ACC, SAD_ESRI))
+
+sad_diff <- subset(BY_data,Emotion_Condition == "Sadness")$ACC - subset(RG_data,Emotion_Condition == "Sadness")$ACC
+neu_diff <- subset(BY_data,Emotion_Condition == "Neutral")$ACC - subset(RG_data,Emotion_Condition == "Neutral")$ACC
+
+```
+**(a). Visualize the differences between blue-yellow accuracy (BY_ACC) and red-green accuracy (RG_ACC) for both the sad and neutral viewers (Emotion_Condition).**
+```{r}
+data <- cbind(sad_diff,neu_diff)
+boxplot(data)
+
+mean_segment <- function(n = 1, dataset){
+  mean <- mean(dataset)
+  segments(x0 = n-0.4, y0 = mean, x1 = n+0.4, y1 = mean, col = rgb(1,0,0), lwd = 2, lty = "dotted")
+}
+# draw the mean lines on the graph
+mean_segment(1,sad_diff)
+mean_segment(2,neu_diff)
+```
+
+From the graph above, it can be easily found that their distribution and mean are quiet the same, and the range of neu_diff is wider than sad_diff. 
+
+**(b). Run a t-test (traditional) to check if there is a significant difference in blue-yellow accuracy between sad and neutral participants at 95% confidence.**
+```{r}
+t.test(sad_diff)
+```
+according to the result, we can find that the p-value= ,which is larger than alpha = 0.05. So We do not reject the null hypothesis.(i.e the mean of difference is equal to 0)
+
+**(c). Run a t-test (traditional) to check if there is a significant difference in red-green accuracy between sad and neutral participants at 95% confidence.**
+```{r}
+t.test(neu_diff)
+```
+according to the result, we can find that the p-value= ,which is larger than alpha = 0.05. So We do not reject the null hypothesis.(i.e the mean of difference is equal to 0)
+
+**(d).  Do the above t-tests support a claim that there is an interaction between emotion and color axis?**  
+
+Ans: According to the test result above, we can know that the two test all suggest that do not reject the null hypothesis, which means that the difference in the color axis from BY to RG is 0 in both Sadness and Neutral. So we may say that there is not significant difference while people perform the experiment in two different emotion, which means there isn’t interaction between emotion and color axis.
+
+**(e). Run a factorial design ANOVA where color perception accuracy is determined by emotion (sad vs. neutral), color-axis (RG vs. BY), and the interaction of emotion and color-axis.**
+
+```{r}
+all_data <- rbind(BY_data, RG_data)
+data_aov <- aov(formula = ACC ~ Axis + Emotion_Condition + Axis:Emotion_Condition, data=all_data)
+summary(data_aov)
+
+# draw the interaction plot
+with(all_data, 
+     interaction.plot(
+       x.factor=Emotion_Condition, 
+       trace.factor=Axis, 
+       response=ACC, 
+       lwd=2
+     )
+)
+```
